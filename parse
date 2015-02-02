@@ -1,0 +1,31 @@
+#!/bin/bash
+
+default_editor="vim"
+
+directory="/tmp/parsedir$$"
+mkdir -p "$directory"
+script="$directory/script"
+>"$script"
+input="$directory/input"
+>"$input"
+
+editor="$1"
+if [ -z "$editor" ]
+then
+	editor="$default_editor"
+fi
+
+printf 'content = """\n' > "$input"
+cat >> "$input"
+cat >> "$input" <<EOF
+"""
+lines = content.split('\n')
+del content
+EOF
+
+"$editor" "$script" < /dev/tty 
+
+cat <"$script" >>"$input"
+python "$input"
+
+rm -rf "$directory"
